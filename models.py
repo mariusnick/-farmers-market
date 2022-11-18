@@ -11,8 +11,9 @@ import json
 # if database_path.startswith("postgres://"):
 #     database_path = database_path.replace("postgres://", "postgresql://", 1)
 database_name = "market"
-database_path = "postgresql://{}:{}@{}/{}".format(
-    'postgres', '123', 'localhost:5432', database_name)
+# database_path = "postgresql://{}:{}@{}/{}".format(
+    # 'postgres', '123', 'localhost:5432', database_name)
+database_path = os.environ['DATABASE_URL']
 db = SQLAlchemy()
 
 '''
