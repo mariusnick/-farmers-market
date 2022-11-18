@@ -1,0 +1,317 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 11.3
+-- Dumped by pg_dump version 11.3
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- Name: categories; Type: TABLE; Schema: public; Owner: odoo
+--
+
+
+
+
+CREATE TABLE public.vendor (
+    id integer  NOT NULL,
+    name text,
+    address text,
+    city text,
+    email text,
+    phone text,
+    ratings text
+);
+
+
+ALTER TABLE public.vendor OWNER TO odoo;
+
+--
+-- Name: vendor_id_seq; Type: SEQUENCE; Schema: public; Owner: odoo
+--
+
+CREATE SEQUENCE public.vendor_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.vendor_id_seq OWNER TO odoo;
+
+--
+-- Name: vendor_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: odoo
+--
+
+ALTER SEQUENCE public.vendor_id_seq OWNED BY public.vendor.id;
+
+
+
+
+
+
+CREATE TABLE public.customer (
+    id integer NOT NULL,
+    name text,
+    address text,
+    city text,
+    email text,
+    phone text,
+    ratings text
+);
+
+
+ALTER TABLE public.customer OWNER TO odoo;
+
+--
+-- Name: customer_id_seq; Type: SEQUENCE; Schema: public; Owner: odoo
+--
+
+CREATE SEQUENCE public.customer_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.customer_id_seq OWNER TO odoo;
+
+--
+-- Name: customer_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: odoo
+--
+
+ALTER SEQUENCE public.customer_id_seq OWNED BY public.customer.id;
+
+
+
+
+--
+-- Name: product; Type: TABLE; Schema: public; Owner: odoo
+--
+
+
+CREATE TABLE public.product (
+    id integer NOT NULL,
+    name text,
+    category text,
+    uom text
+);
+
+
+ALTER TABLE public.product OWNER TO odoo;
+
+--
+-- Name: product_id_seq; Type: SEQUENCE; Schema: public; Owner: odoo
+--
+
+CREATE SEQUENCE public.product_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.product_id_seq OWNER TO odoo;
+
+--
+-- Name: postgres_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: odoo
+--
+
+ALTER SEQUENCE public.product_id_seq OWNED BY public.product.id;
+
+
+
+
+
+--
+-- Name: sale_order; Type: TABLE; Schema: public; Owner: odoo
+--
+ 
+
+CREATE TABLE public.sale_order (
+    id integer  NOT NULL,
+    vendor_id integer,
+    product_id integer,
+    data_production timestamp without time zone DEFAULT now(),
+    data_order timestamp without time zone DEFAULT now(),
+    qty_total integer,
+    qty_remain integer,
+    ratings text 
+);
+
+
+ALTER TABLE public.sale_order OWNER TO odoo;
+
+--
+-- Name: sale_id_seq; Type: SEQUENCE; Schema: public; Owner: odoo
+--
+
+CREATE SEQUENCE public.sale_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.sale_id_seq OWNER TO odoo;
+
+--
+-- Name: postgres_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: odoo
+--
+
+ALTER SEQUENCE public.sale_id_seq OWNED BY public.sale_order.id;
+
+
+
+
+--
+-- Name: sale_order; Type: TABLE; Schema: public; Owner: odoo
+--
+ 
+
+
+
+CREATE TABLE public.buy_order (
+    id integer NOT NULL,
+    customer_id integer,
+    product_id integer,
+    sale_order_id integer,
+    data_order timestamp without time zone DEFAULT now(),
+    active boolean,
+    payment boolean,
+    shipping boolean,
+    qty integer
+);
+
+
+ALTER TABLE public.buy_order OWNER TO odoo;
+
+--
+-- Name: buy_id_seq; Type: SEQUENCE; Schema: public; Owner: odoo
+--
+
+CREATE SEQUENCE public.buy_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.buy_id_seq OWNER TO odoo;
+
+--
+-- Name: postgres_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: odoo
+--
+
+ALTER SEQUENCE public.buy_id_seq OWNED BY public.buy_order.id;
+
+
+
+
+
+
+
+
+--
+-- Name: categories id; Type: DEFAULT; Schema: public; Owner: odoo
+--
+
+ALTER TABLE ONLY public.vendor ALTER COLUMN id SET DEFAULT nextval('public.vendor_id_seq'::regclass);
+
+
+--
+-- Name: questions id; Type: DEFAULT; Schema: public; Owner: odoo
+--
+
+ALTER TABLE ONLY public.product ALTER COLUMN id SET DEFAULT nextval('public.product_id_seq'::regclass);
+
+
+--
+-- Data for Name: categories; Type: TABLE DATA; Schema: public; Owner: student
+--
+
+COPY public.vendor (id,name,address,city,email,phone) FROM stdin  WITH (DELIMITER ',');
+1,George,Lyasam no 5,Rye,gr@farm.br,034677789
+2,Wiliam,Grove no 134,Idem,wr@farm.br,0457734
+\.
+
+COPY public.customer (id,name,address,city,email,phone) FROM stdin  WITH (DELIMITER ',');
+1,Lucas,Raist no 8,Drover,l@cust.br,0554677789
+2,Jane,Fullger no 134,Drover,jn@cust.br,0457734
+\.
+
+COPY public.sale_order (id,vendor_id,product_id,qty_total,qty_remain) FROM stdin  WITH (DELIMITER ',');
+1,1,1,50,50
+2,1,2,30,30
+\.
+
+
+COPY public.buy_order (id,customer_id,sale_order_id,qty) FROM stdin  WITH (DELIMITER ',');
+1,1,1,5
+2,2,2,2
+\.
+
+
+
+
+--
+-- Data for Name: product; Type: TABLE DATA; Schema: public; Owner: product
+--
+
+COPY public.product (id, name, category, uom) FROM stdin WITH (DELIMITER ',');
+1,Tomate,vegetabels,kg
+2,Apple,fruit,kg
+\.
+
+
+--
+-- Name: vendor_id_seq; Type: SEQUENCE SET; Schema: public; Owner: odoo
+--
+
+
+--
+-- PostgreSQL database dump complete
+--
+
+--
+-- Name: actors vendors_pkey; Type: CONSTRAINT; Schema: public; Owner: odoo
+--
+
+ALTER TABLE ONLY public.vendor
+    ADD CONSTRAINT vendors_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY public.product
+    ADD CONSTRAINT products_pkey PRIMARY KEY (id);
+
+
+
+ALTER TABLE ONLY public.sale_order
+    ADD CONSTRAINT Sale_Vendor_id_fkey FOREIGN KEY (vendor_id) REFERENCES public.vendor(id);
+
+ALTER TABLE ONLY public.sale_order
+    ADD CONSTRAINT Sale_Product_id_fkey FOREIGN KEY (product_id) REFERENCES public.product(id);
+
