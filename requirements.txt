@@ -3,7 +3,7 @@ autopep8==2.0.0
 cffi==1.15.1
 click==8.0.1
 cryptography==38.0.3
-dataclasses==0.8
+
 ecdsa==0.18.0
 Flask==1.1.2
 Flask-Cors==3.0.10
