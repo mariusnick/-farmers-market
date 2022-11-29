@@ -1,4 +1,5 @@
 import os
+import json
 from xmlrpc.client import Boolean, DateTime
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, create_engine
 from flask_migrate import Migrate
@@ -119,7 +120,7 @@ class Sale_Order(db.Model):
     ratings = Column(String)
 
     def __init__(self, vendor_id, product_id, data_production,data_order,qty_total,qty_remain):
-        self.id = 101
+       
         self.vendor_id = vendor_id
         self.product_id = product_id
         self.data_production = data_production
@@ -230,6 +231,22 @@ class Buy_Order(db.Model):
             'product': self.product_id,
             'shipping':self.shipping,
             }
+
+
+
+
+
+'''
+@TODO implement error handlers using the @app.errorhandler(error) decorator
+    each error handler should return (with approprate messages):
+             jsonify({
+                    "success": False,
+                    "error": 404,
+                    "message": "resource not found"
+                    }), 404
+'''
+
+
 
 
 # class Transaction(db.Model):
