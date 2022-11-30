@@ -490,7 +490,7 @@ def create_app(test_config=None):
     # Buy Order
 
     @app.route('/buy_orders', methods=['GET'])
-    @requires_auth('get:buy_orders')
+    @requires_auth('get:buy_order')
     def get_bo(payload):
         bos = Buy_Order.query.all()
         bos = list(map(lambda bo: bo.format(), bos))
