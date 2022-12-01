@@ -21,7 +21,7 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: categories; Type: TABLE; Schema: public; Owner: odoo
+-- Name: vendor; Type: TABLE; Schema: public; Owner: odoo
 --
 
 
@@ -60,10 +60,6 @@ ALTER TABLE public.vendor_id_seq OWNER TO odoo;
 --
 
 ALTER SEQUENCE public.vendor_id_seq OWNED BY public.vendor.id;
-
-
-
-
 
 
 CREATE TABLE public.customer (
@@ -237,7 +233,7 @@ ALTER SEQUENCE public.buy_id_seq OWNED BY public.buy_order.id;
 
 
 --
--- Name: categories id; Type: DEFAULT; Schema: public; Owner: odoo
+-- Name: vendor id; Type: DEFAULT; Schema: public; Owner: odoo
 --
 
 ALTER TABLE ONLY public.vendor ALTER COLUMN id SET DEFAULT nextval('public.vendor_id_seq'::regclass);
@@ -248,31 +244,39 @@ ALTER TABLE ONLY public.vendor ALTER COLUMN id SET DEFAULT nextval('public.vendo
 --
 
 ALTER TABLE ONLY public.product ALTER COLUMN id SET DEFAULT nextval('public.product_id_seq'::regclass);
-
+ALTER TABLE ONLY public.customer ALTER COLUMN id SET DEFAULT nextval('public.customer_id_seq'::regclass);
+ALTER TABLE ONLY public.sale_order ALTER COLUMN id SET DEFAULT nextval('public.sale_id_seq'::regclass);
+ALTER TABLE ONLY public.buy_order ALTER COLUMN id SET DEFAULT nextval('public.buy_id_seq'::regclass);
 
 --
--- Data for Name: categories; Type: TABLE DATA; Schema: public; Owner: student
+-- Data for Name: vendor; Type: TABLE DATA; Schema: public; Owner: student
 --
 
 COPY public.vendor (id,name,address,city,email,phone) FROM stdin  WITH (DELIMITER ',');
-1,George,Lyasam no 5,Rye,gr@farm.br,034677789
-2,Wiliam,Grove no 134,Idem,wr@farm.br,0457734
+100,George,Lyasam no 5,Rye,gr@farm.br,034677789
+101,Wiliam,Grove no 134,Idem,wr@farm.br,0457734
 \.
 
 COPY public.customer (id,name,address,city,email,phone) FROM stdin  WITH (DELIMITER ',');
-1,Lucas,Raist no 8,Drover,l@cust.br,0554677789
-2,Jane,Fullger no 134,Drover,jn@cust.br,0457734
+100,Lucas,Raist no 8,Drover,l@cust.br,0554677789
+101,Jane,Fullger no 134,Drover,jn@cust.br,0457734
 \.
 
+COPY public.product (id, name, category, uom) FROM stdin WITH (DELIMITER ',');
+100,Tomate,vegetabels,kg
+101,Apple,fruit,kg
+\.
+
+
 COPY public.sale_order (id,vendor_id,product_id,qty_total,qty_remain) FROM stdin  WITH (DELIMITER ',');
-1,1,1,50,50
-2,1,2,30,30
+100,100,100,50,50
+101,100,101,30,30
 \.
 
 
 COPY public.buy_order (id,customer_id,sale_order_id,qty) FROM stdin  WITH (DELIMITER ',');
-1,1,1,5
-2,2,2,2
+100,100,100,5
+101,100,101,2
 \.
 
 
@@ -282,10 +286,6 @@ COPY public.buy_order (id,customer_id,sale_order_id,qty) FROM stdin  WITH (DELIM
 -- Data for Name: product; Type: TABLE DATA; Schema: public; Owner: product
 --
 
-COPY public.product (id, name, category, uom) FROM stdin WITH (DELIMITER ',');
-1,Tomate,vegetabels,kg
-2,Apple,fruit,kg
-\.
 
 
 --
@@ -297,12 +297,13 @@ COPY public.product (id, name, category, uom) FROM stdin WITH (DELIMITER ',');
 -- PostgreSQL database dump complete
 --
 
---
--- Name: actors vendors_pkey; Type: CONSTRAINT; Schema: public; Owner: odoo
---
+
 
 ALTER TABLE ONLY public.vendor
     ADD CONSTRAINT vendors_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY public.customer
+    ADD CONSTRAINT customer_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY public.product
     ADD CONSTRAINT products_pkey PRIMARY KEY (id);

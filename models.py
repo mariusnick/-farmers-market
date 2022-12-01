@@ -159,14 +159,15 @@ class Customer(db.Model):
     phone = Column(String)
     ratings = Column(String)
     # orders = db.relationship('Buy_Order', backref='list', lazy=True)
-
+    
     def __init__(self, name, address, city, email, phone):
-        
+       
         self.name = name
         self.address = address
         self.city = city
         self.email = email
         self.phone = phone
+        
 
     def insert(self):
         db.session.add(self)
@@ -203,7 +204,7 @@ class Buy_Order(db.Model):
     qty = Column(Integer)
 
     def __init__(self, customer_id,sale_order_id,product_id,payment,shipping,active,data_order,qty):
-        self.id = 100
+        
         self.customer_id = customer_id
         self.sale_order_id = sale_order_id
         self.product_id = product_id
@@ -249,34 +250,3 @@ class Buy_Order(db.Model):
 
 
 
-# class Transaction(db.Model):
-#     __tablename__ = 'transaction'
-
-#     id = Column(db.Integer, primary_key=True)
-#     sale_order_id = Column(Integer, ForeignKey('sale_order.id'), nullable=False)
-#     buy_order_id = Column(Integer, ForeignKey('buy_order.id'), nullable=False)
-#     data_transaction = Column(DateTime)
-#     qty = Column(Integer)
-
-
-#     def __init__(self, name, category, uom):
-#         self.name = name
-#         self.address = category
-#         self.uom = uom
-
-#     def insert(self):
-#         db.session.add(self)
-#         db.session.commit()
-
-#     def update(self):
-#         db.session.commit()
-
-#     def delete(self):
-#         db.session.delete(self)
-#         db.session.commit()
-
-#     def format(self):
-#         return {
-#             'id': self.id,
-#             'customer': self.customer_id,
-#             'product':self.product_id}

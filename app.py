@@ -43,7 +43,7 @@ def create_app(test_config=None):
     @requires_auth('get:vendor')
     def get_vendor(payload):
         vendors = Vendor.query.all()
-        print("ssss")
+
         vendors = list(map(lambda vendor: vendor.format(), vendors))
         return jsonify({
             "success": True,
@@ -58,9 +58,9 @@ def create_app(test_config=None):
         if text.isnumeric():
            
             vendors = Vendor.query.get(int(text))
-            vendors = vendors.format()
+            vendors = [vendors.format()]
         else:
-            print("Mark text") 
+            
             vendors = Vendor.query.filter(Vendor.city.like(text))
             vendors = list(map(lambda vendor: vendor.format(), vendors))
            
@@ -75,25 +75,7 @@ def create_app(test_config=None):
 
    
 
-    '''
-    POST /vendors
-    Creates a new vendors.
-    Requires the name address city .
-    Example Request:
-    curl --request POST 'http://localhost:5000/vendors' \
-        --header 'Content-Type: application/json' \
-        --data-raw ' {
-    "name": "Andrew ",
-    "address": "xxx no14",
-    "city": "Alton",
-    "email": "andrew@farm.br",
-    "phone": "047755587"}
-    Response:
-    {    
-        "created": true,
-        
-    }
-    '''
+   
     @app.route('/vendors', methods=['POST'])
     @requires_auth('put:vendor')
     def create_vendors(payload):
@@ -116,7 +98,6 @@ def create_app(test_config=None):
             email=email,
             phone=phone,
             address=address)
-        print(vendor)
         try:
             vendor.insert()
 
@@ -148,8 +129,7 @@ def create_app(test_config=None):
     @requires_auth('patch:vendor')
     def update_vendors(payload,id):
         body = request.get_json()
-        print(body)
-        print(id)
+  
         if not id:
             abort(400)
 
@@ -218,7 +198,7 @@ def create_app(test_config=None):
 
         name = body.get('name', None)
         if not name :
-            abort(404)    
+            abort(400)    
         category = body.get('category', None)
         uom = body.get('uom', None)
 
@@ -274,11 +254,9 @@ def create_app(test_config=None):
         """Get all sale order  from product name or part of  product name"""
         
         products = Product.query.filter(Product.name.like('%'+text+'%'))
-        
         products = list(map(lambda product: product.id, products))
-        print(products)
+       
         sale_orders = Sale_Order.query.join(Product).filter(Product.name.like('%'+text+'%'))
-        print(sale_orders)
         sale_orders = list(map(lambda so: so.format(), sale_orders))
         return jsonify({
                 'success': True,
@@ -300,14 +278,12 @@ def create_app(test_config=None):
         if not vendor_id or not product_id or not qty_total:
             abort(400)
         
-        print(vendor_id)
         so = Sale_Order(vendor_id=vendor_id,
                         product_id=product_id,
                         data_production=data_production,
                         data_order=datetime.now(),
                         qty_total=qty_total,
                         qty_remain=qty_total)
-        print(so.format())
         try:
             so.insert()
 
@@ -340,8 +316,6 @@ def create_app(test_config=None):
     @requires_auth('patch:sale_order')
     def update_sale_order(payload,id):
         body = request.get_json()
-        print(body)
-        print(id)
         if not id:
             abort(400)
 
@@ -385,14 +359,14 @@ def create_app(test_config=None):
         return app
     
     @app.route('/customers/<text>')
-    @requires_auth('get:customers')
+    @requires_auth('get:customer')
     def get_customers_by_city_id(payload,text):
-        """Get all vendors from one city or by id"""
-        
+        """Get all vendor from one city or by id"""
         if text.isnumeric():
             customers = Customer.query.get(int(text))
-        else: customers = Customer.query.filter(Customer.city.like(text))
-
+        else: 
+            customers = Customer.query.filter(Customer.city.like(text))
+            customers = list(map(lambda customer: customer.format(), customers))
         if customers is None:
             abort(404)
         else:
@@ -424,6 +398,7 @@ def create_app(test_config=None):
                             email=email,
                             phone=phone,
                             address=address)
+        
         try:
             customer.insert()
             return jsonify({
@@ -454,8 +429,6 @@ def create_app(test_config=None):
     @requires_auth('patch:customer')
     def update_customers(payload, id):
         body = request.get_json()
-        print(body)
-        print(id)
         if not id:
             abort(400)
 
@@ -512,9 +485,13 @@ def create_app(test_config=None):
         customer_id = body.get('customer_id', None)
         product_id = body.get('product_id', None)
         sale_order_id = body.get('sale_order_id', None)
+        sale_order = Sale_Order.query.filter(Sale_Order.id == sale_order_id).one_or_none()
+        if sale_order is None:
+            abort(403)
+        product_id = sale_order.product_id
         qty = body.get('qty', None)
         
-        if customer_id is None or product_id is None or sale_order_id is None:
+        if customer_id is None  or sale_order_id is None or qty is None:
             abort(400)
 
         bo = Buy_Order(
@@ -526,17 +503,14 @@ def create_app(test_config=None):
             shipping=False,
             payment=False,
             qty=qty)
-
         so = Sale_Order.query.filter(
             Sale_Order.id == int(sale_order_id)).one_or_none()
         if so.qty_remain >= qty:
             so.qty_remain = so.qty_remain - qty
         else: 
-            # need abort
-            pass
+            abort(422)
         so.update()
 
-        print(bo.format())
         try:
             bo.insert()
 
@@ -568,8 +542,7 @@ def create_app(test_config=None):
     @requires_auth('patch:buy_order')
     def update_buy_orders(payload, id):
         body = request.get_json()
-        print(body)
-        print(id)
+
         if not id:
             abort(400)
         
@@ -589,17 +562,14 @@ def create_app(test_config=None):
             so = Sale_Order.query.filter(
                 Sale_Order.id == buy_order.sale_order_id).one_or_none()
             qty_rremain = so.qty_remain + buy_order.qty
-            print(f"SS {qty_rremain}")
             if qty_rremain > new_qty:
                 so.qty_remain = so.qty_remain - new_qty
                 buy_order.qty = new_qty
-                print(buy_order)
                 so.update()
             else:
                 pass
 
         try:
-            print(buy_order.format())
             buy_order.update()
             return jsonify(
                 {
