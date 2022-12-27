@@ -67,7 +67,6 @@ class MarketTestCase(unittest.TestCase):
             "Manager": f'Bearer {manager_jwt}'
         }
 
-    
 
     """
     Vendor

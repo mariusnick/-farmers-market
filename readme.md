@@ -211,7 +211,6 @@ Auth0 information for endpoints that require authentication can be found in `aut
 
 ### DELETE /products/<id\>
 
-
 - General:
   - Deletes a product whith id   from database.
   - Request Parameter(in URL): id
